@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>News Flash</title>
+    <style>
+      /* Reset some default styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      /* Body and Font Styles */
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f9;
+        color: #333;
+        line-height: 1.6;
+      }
+
+      /* Navbar Styles */
+      header {
+        background-color: #333;
+        color: #fff;
+        padding: 10px 20px;
+        text-align: center;
+      }
+      header h1 {
+        margin-bottom: 10px;
+      }
+      nav ul {
+        display: flex;
+        justify-content: center;
+        list-style: none;
+      }
+      nav ul li {
+        margin: 0 15px;
+      }
+      nav ul li a {
+        color: #fff;
+        text-decoration: none;
+        font-weight: bold;
+      }
+
+      /* Main Content Styles */
+      main {
+        max-width: 1200px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #fff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+      }
+      section {
+        margin-bottom: 20px;
+      }
+      section h2 {
+        border-bottom: 2px solid #333;
+        padding-bottom: 5px;
+        margin-bottom: 10px;
+      }
+
+      /* Article Styles */
+      article {
+        margin-bottom: 15px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+      }
+      article h3 {
+        color: #333;
+      }
+      article p {
+        margin: 10px 0;
+      }
+      article a {
+        color: #007bff;
+        text-decoration: none;
+      }
+      article a:hover {
+        text-decoration: underline;
+      }
+
+      /* Category Section */
+      .category {
+        margin-bottom: 20px;
+      }
+      .category ul {
+        list-style-type: disc;
+        margin-left: 20px;
+      }
+
+      /* Footer Styles */
+      footer {
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        padding: 15px 20px;
+        margin-top: 20px;
+      }
+      footer ul {
+        list-style: none;
+        display: flex;
+        justify-content: center;
+        padding-top: 10px;
+      }
+      footer ul li {
+        margin: 0 10px;
+      }
+      footer ul li a {
+        color: #fff;
+        text-decoration: none;
+        font-size: 0.9em;
+      }
+      footer ul li a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header / Navbar -->
+    <header>
+      <nav>
+        <h1>News Flash</h1>
+        <ul>
+          <li><a href="#top-news">Top News</a></li>
+          <li><a href="#categories">Categories</a></li>
+          <li><a href="#trending">Trending</a></li>
+          <li><a href="#about">About</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+      <!-- Top News Section -->
+      <section id="top-news">
+        <h2>Top News</h2>
+        <article>
+          <h3>Headline 1</h3>
+          <p>Summary of the news article goes here...</p>
+          <a href="#" target="_blank">Read more</a>
+        </article>
+        <article>
+          <h3>Headline 2</h3>
+          <p>Summary of the news article goes here...</p>
+          <a href="#" target="_blank">Read more</a>
+        </article>
+        <!-- Additional top news articles... -->
+      </section>
+
+      <!-- News Categories Section -->
+      <section id="categories">
+        <h2>Categories</h2>
+        <div class="category">
+          <h3>Technology</h3>
+          <ul>
+            <li><a href="#" target="_blank">Tech News 1</a></li>
+            <li><a href="#" target="_blank">Tech News 2</a></li>
+            <!-- More tech news... -->
+          </ul>
+        </div>
+        <div class="category">
+          <h3>World</h3>
+          <ul>
+            <li><a href="#" target="_blank">World News 1</a></li>
+            <li><a href="#" target="_blank">World News 2</a></li>
+            <!-- More world news... -->
+          </ul>
+        </div>
+        <!-- Additional categories... -->
+      </section>
+
+      <!-- Trending Section -->
+      <section id="trending">
+        <h2>Trending</h2>
+        <ul>
+          <li><a href="#" target="_blank">Trending News 1</a></li>
+          <li><a href="#" target="_blank">Trending News 2</a></li>
+          <!-- Additional trending news... -->
+        </ul>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+      <p>&copy; 2024 News Flash. All rights reserved.</p>
+      <ul>
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms of Service</a></li>
+        <li><a href="#">Contact Us</a></li>
+      </ul>
+    </footer>
+  </body>
+</html>
