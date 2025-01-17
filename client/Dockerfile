@@ -1,5 +1,6 @@
 # Step 1: Use Node.js to build the React app
-FROM node:18 AS build
+#FROM node:18 AS build <---- when not in debug
+FROM node:18 
 
 # Set working directory inside the container
 WORKDIR /app
@@ -17,14 +18,14 @@ COPY . .
 RUN npm run build
 
 # Step 2: Use Nginx to serve the built application
-FROM nginx:alpine
+#FROM nginx:alpine <---- remove cmment when not in debug
 
 # Copy the built React app from the previous step to Nginx's web root
-COPY --from=build /app/build /usr/share/nginx/html
+#COPY --from=build /app/build /usr/share/nginx/html <---- remove cmment when not in debug
 
 # Expose port 80 to the host
-#EXPOSE 80
 EXPOSE 3000
+CMD ["npm", "start"]
 
-# Start Nginx
-CMD ["nginx", "-g", "daemon off;"]
+#EXPOSE 80
+#CMD ["nginx", "-g", "daemon off;"]
