@@ -40,6 +40,16 @@ function SignupModal({ onClose, onAuthChange }) {
                         placeholder="Password"
                         value={credentials.password}
                         onChange={handleChange}
+                        checkifpasswordsMatch={credentials.password === credentials.confirmPassword}
+                        required
+                    />
+                    <input
+                        type="password"
+                        name="confirmPassword"
+                        placeholder="Confirm Password"
+                        value={credentials.confirmPassword}
+                        onChange={handleChange}
+                        checkifpasswordsMatch={credentials.password === credentials.confirmPassword}
                         required
                     />
                     <button type="submit">Sign Up</button>

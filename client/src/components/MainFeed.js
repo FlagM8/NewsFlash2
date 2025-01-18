@@ -1,10 +1,86 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import '../styles/MainFeed.css';
 
-function MainFeed() {
+function MainFeed({ user }) {
+    const [articles, setArticles] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
+
+    // const goToUserProfile = () => {
+    //     navigate('/profile'); // Redirect to the profile page
+    // };
+
+    useEffect(() => {
+        const fetchArticles = async () => {
+            try {
+                setLoading(true);
+                const response = await fetch('https://api.example.com/news'); // Replace with your API endpoint
+                const data = await response.json();
+                setArticles(data.articles);
+            } catch (error) {
+                console.error('Error fetching articles:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchArticles();
+    }, []);
+
     return (
-        <div style={{ textAlign: 'center', padding: '20px' }}>
-            <h1>Welcome to the Main Feed</h1>
-            <p>This is where the news feed would appear.</p>
+        <div className="main-feed">
+            <header className="main-feed-header">
+                <h1>News Aggregator</h1>
+                <p>Stay updated with the latest news from around the world.</p>
+
+                {/* User Profile Button */}
+                {/* <button className="user-profile-button" onClick={goToUserProfile}>
+                    Render user profile picture if available
+                    {user.profilePicture && (
+                        // <img
+                        //     src={user.profilePicture}
+                        //     alt={`${user.username}'s profile`}
+                        //     className="user-profile-picture"
+                        // />
+                    )}
+                    <p>{user.username}</p>
+                </button> */}
+            </header>
+
+            <div className="main-feed-content">
+                {loading ? (
+                    <p>Loading articles...</p>
+                ) : articles.length > 0 ? (
+                    <div className="articles-list">
+                        {articles.map((article, index) => (
+                            <div key={index} className="article-card">
+                                {article.urlToImage && (
+                                    <img
+                                        src={article.urlToImage}
+                                        alt={article.title}
+                                        className="article-image"
+                                    />
+                                )}
+                                <div className="article-details">
+                                    <h2 className="article-title">{article.title}</h2>
+                                    <p className="article-description">{article.description}</p>
+                                    <a
+                                        href={article.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="read-more"
+                                    >
+                                        Read More
+                                    </a>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <p>No articles found.</p>
+                )}
+            </div>
         </div>
     );
 }
