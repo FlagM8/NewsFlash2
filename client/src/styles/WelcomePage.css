@@ -1,6 +1,6 @@
 .welcome-page {
     text-align: center;
-    background-color: #f4f4f4;
+    background-color: #394867;
     height: 100vh;
     display: flex;
     flex-direction: column;
@@ -10,6 +10,13 @@
 
 .welcome-header h1 {
     font-size: 2.5em;
+    color: #9BA4B5;
+    margin-bottom: 20px;
+}
+
+.welcome-header p {
+    font-size: 1.5em;
+    color: #9BA4B5;
     margin-bottom: 20px;
 }
 
@@ -26,10 +33,10 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    background-color: #007bff;
-    color: white;
+    background-color: #9BA4B5;
+    color: #F1F6F9;
 }
 
 .auth-buttons button:hover {
-    background-color: #0056b3;
+    background-color: #9BA4B5;
 }

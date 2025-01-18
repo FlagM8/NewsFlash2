@@ -1,0 +1,67 @@
+.main-feed {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background-color: #394867;
+    position: relative;
+}
+
+.main-feed-header {
+    text-align: center;
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.main-feed-header h1 {
+    font-size: 2.5rem;
+    color: #9BA4B5;
+}
+
+.main-feed-header p {
+    color: #9BA4B5;
+    font-size: 1.2rem;
+}
+
+/* User Profile Button */
+.user-profile-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    background-color: #9BA4B5;
+    color: #F1F6F9;
+    font-size: 0.9rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.user-profile-button:hover {
+    background-color: #212A3E;
+}
+
+.user-profile-picture {
+width: 30px;
+height: 30px;
+border-radius: 50%;
+object-fit: cover;
+margin-right: 10px;
+}
+
+/* Articles Grid */
+.main-feed-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.articles-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    width: 100%;
+    max-width: 1200px;
+}
