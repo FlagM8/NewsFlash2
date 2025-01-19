@@ -1,9 +1,13 @@
-from main import db_users, db_comments, db_chapters
 from werkzeug.security import check_password_hash
 from bson.objectid import ObjectId
 from typing import Dict, List
 import datetime, random, math
+from main_old import db_users
+#from flask import current_app as app
 
+
+
+#db_users = app.mongo.db.users
 class User:
     def __init__(self, username, email, password_hash, topics=None, _id=None, created_at=None) -> None:
         self._id = ObjectId(_id) if _id else ObjectId()

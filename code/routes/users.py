@@ -1,7 +1,7 @@
 from flask import jsonify, request
 from bson import json_util
 from flask import Blueprint, jsonify
-from main import db_users, db_chapters, db_stories
+from main import db_users
 from models.user import User
 from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -9,7 +9,6 @@ from datetime import timedelta
 
 
 bp_users = Blueprint('users', __name__)
-
 
 # sign up sequence
 @bp_users.route("/signup", methods=["POST"])

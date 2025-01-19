@@ -15,4 +15,4 @@ COPY . .
 EXPOSE 5001
 
 # Default command to run the application
-CMD ["python", "main.py"]
+CMD ["python", "run.py"]
