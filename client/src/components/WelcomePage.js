@@ -12,7 +12,7 @@ function WelcomePage({ onAuthChange }) {
             <div className="welcome-header">
                 <h1>Welcome to News Flash</h1>
                 <p>Your source for the latest news</p>
-                <p>*Sign up* or *log in* to get started</p>
+                <p>Sign up or log in to get started</p>
                 <div className="auth-buttons">
                     <button onClick={() => setShowLogin(true)}>Log In</button>
                     <button onClick={() => setShowSignup(true)}>Sign Up</button>
