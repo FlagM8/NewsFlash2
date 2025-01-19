@@ -7,11 +7,11 @@ services:
       - "5001:5001"
     volumes:
       - ./code:/usr/src/app
-       - ./code:/app
+      - ./code:/app
     environment:
       - FLASK_ENV=development
       - FLASK_APP=code/app.py
-      - MONGO_URI=mongodb://root:example@mongodb:27017/your_database_name
+      - MONGO_URI=mongodb://root:example@mongodb:27017/admin
       - REDIS_URL=redis://redis:6379
     networks:
       - app-network
@@ -32,10 +32,14 @@ services:
     environment:
       - CHOKIDAR_USEPOLLING=true #
       - NODE_ENV=development
-      - BACKEND_SERVICE_URL=http://code:5001
-      - REACT_GATEWAY_URL=http://code:8000
+      - BACKEND_SERVICE_URL=http://localhost:5001
+      - REACT_GATEWAY_URL=http://localhost:5001
     networks:
       - app-network
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+
 
   mongodb:
     image: mongo:7.0
