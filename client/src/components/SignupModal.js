@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import '../styles/Modal.css';
-import axiosInstance from '../axiosInstance';
+import {axiosInstance,setToken} from '../axiosInstance';
 
 function SignupModal({ onClose, onAuthChange }) {
     const [credentials, setCredentials] = useState({ username: '', password: '', confirmPassword: '', email: ''});
     const [error, setError] = useState(null);
+    const [token, setToken] = useState(null);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -29,7 +30,10 @@ function SignupModal({ onClose, onAuthChange }) {
 
                 // Handle successful signup
                 if (response.status === 201) {
+                    const token = response.data.access_token;
+                    const userData = response.data.user_data; //tady jsou user_data - kdyztak koukni do user.py(class User) v modelech, tam uvidis vsechny parametry ktere to ma, pripadne to jde vypsat v konzoli. Musis ulozit data lokalne, at jsou k dispozici
                     alert('Signup successful');
+                    setToken(token);
                     onAuthChange(); // Notify parent component of successful signup
                     onClose(); // Close the modal
                 }

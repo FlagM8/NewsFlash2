@@ -42,8 +42,16 @@ def signup():
     user_object = User(username=username, password_hash=hashed_password, email=email)
     user_object.quicksave_to_db()
 
-    data_packet["status"] = "Success"
-    return json_util.dumps(data_packet), 201
+    username_query = {"username": username}
+    user_data = db_users.find_one(username_query)
+    if user_data:
+        access_token = create_access_token(identity=username, expires_delta=timedelta(hours=1))
+        return json_util.dumps({"access_token": access_token,
+                            "user_data": user_data,
+                            "status": "Success"}), 201
+    else:
+        data_packet["status"] = "Error"
+        return json_util.dumps(data_packet), 500
 
 
 # log in sequence
