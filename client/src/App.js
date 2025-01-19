@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axiosInstance from './axiosInstance';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import WelcomePage from './components/WelcomePage';
 import MainFeed from './components/MainFeed';

@@ -9,6 +9,7 @@ import os
 load_dotenv()
 # Database configuration
 MONGO_URI = os.environ.get('MONGO_URI')
+
 REDIS_URI = os.environ.get('REDIS_URL')
 
 #app.config['CORS_HEADERS'] = 'Content-Type'

@@ -7,6 +7,7 @@ services:
       - "5001:5001"
     volumes:
       - ./code:/usr/src/app
+       - ./code:/app
     environment:
       - FLASK_ENV=development
       - FLASK_APP=code/app.py

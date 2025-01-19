@@ -1,24 +1,46 @@
 import React, { useState } from 'react';
 import '../styles/Modal.css';
+import axiosInstance from '../axiosInstance';
 
 function SignupModal({ onClose, onAuthChange }) {
-    const [credentials, setCredentials] = useState({ username: '', password: '', confirmPassword: '' });
+    const [credentials, setCredentials] = useState({ username: '', password: '', confirmPassword: '', email: ''});
+    const [error, setError] = useState(null);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setCredentials({ ...credentials, [name]: value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        const { username, password, confirmPassword } = credentials;
+        const { username, password, confirmPassword, email } = credentials;
         if (!username || !password || !confirmPassword) {
             alert('Please fill in all fields');
         } else if (password !== confirmPassword) {
             alert('Passwords do not match');
         } else {
-            onAuthChange(); // Notify App of successful signup
-            onClose(); // Close the modal
+            try {
+                // Make a POST request to Flask backend's /signup route
+                const response = await axiosInstance.post('/signup', {
+                    username,
+                    password,
+                    email
+                });
+
+                // Handle successful signup
+                if (response.status === 201) {
+                    alert('Signup successful');
+                    onAuthChange(); // Notify parent component of successful signup
+                    onClose(); // Close the modal
+                }
+            } catch (err) {
+                // Handle errors (e.g., username or email already exists)
+                if (err.response) {
+                    setError(err.response.data.status); // Capture error message from the response
+                } else {
+                    setError('Something went wrong');
+                }
+            }
         }
     };
 
@@ -48,6 +70,14 @@ function SignupModal({ onClose, onAuthChange }) {
                         name="confirmPassword"
                         placeholder="Confirm Password"
                         value={credentials.confirmPassword}
+                        onChange={handleChange}
+                        required
+                    />
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="Email"
+                        value={credentials.email}
                         onChange={handleChange}
                         required
                     />
