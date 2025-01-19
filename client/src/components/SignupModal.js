@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import '../styles/Modal.css';
 
-
 function SignupModal({ onClose, onAuthChange }) {
-    const [credentials, setCredentials] = useState({ username: '', password: '' });
+    const [credentials, setCredentials] = useState({ username: '', password: '', confirmPassword: '' });
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -12,12 +11,14 @@ function SignupModal({ onClose, onAuthChange }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Simulate successful signup
-        if (credentials.username && credentials.password) {
-            onAuthChange(); // Notify App of successful signup
-            onClose();
-        } else {
+        const { username, password, confirmPassword } = credentials;
+        if (!username || !password || !confirmPassword) {
             alert('Please fill in all fields');
+        } else if (password !== confirmPassword) {
+            alert('Passwords do not match');
+        } else {
+            onAuthChange(); // Notify App of successful signup
+            onClose(); // Close the modal
         }
     };
 
@@ -40,7 +41,6 @@ function SignupModal({ onClose, onAuthChange }) {
                         placeholder="Password"
                         value={credentials.password}
                         onChange={handleChange}
-                        checkifpasswordsMatch={credentials.password === credentials.confirmPassword}
                         required
                     />
                     <input
@@ -49,7 +49,6 @@ function SignupModal({ onClose, onAuthChange }) {
                         placeholder="Confirm Password"
                         value={credentials.confirmPassword}
                         onChange={handleChange}
-                        checkifpasswordsMatch={credentials.password === credentials.confirmPassword}
                         required
                     />
                     <button type="submit">Sign Up</button>

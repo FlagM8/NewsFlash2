@@ -6,11 +6,15 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    font-family: "Courier New", monospace;
 }
 
 .welcome-header h1 {
     font-size: 2.5em;
     color: #9BA4B5;
+    background-color: #212a3e;
+    border: 2px solid #212a3e;
+    border-radius: 5px;
     margin-bottom: 20px;
 }
 
@@ -24,6 +28,7 @@
     position: absolute;
     top: 20px;
     right: 20px;
+    font-family: "Courier New", "Lucida Console", monospace;
 }
 
 .auth-buttons button {
@@ -35,6 +40,8 @@
     cursor: pointer;
     background-color: #9BA4B5;
     color: #F1F6F9;
+    font-family: "Courier New", "Lucida Console", monospace;
+
 }
 
 .auth-buttons button:hover {

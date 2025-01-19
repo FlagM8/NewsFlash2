@@ -31,7 +31,8 @@ function MainFeed({ user }) {
     return (
         <div className="main-feed">
             <header className="main-feed-header">
-                <h1>News Aggregator</h1>
+                <h1>News Flash</h1>
+                {/* add user name */}
                 <p>Stay updated with the latest news from around the world.</p>
 
                 {/* User Profile Button */}
