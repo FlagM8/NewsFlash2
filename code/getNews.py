@@ -44,5 +44,3 @@ def Parse_url(article,tag):
 def remove_news():
     one_day_ago = datetime.now() - timedelta(days=1)
     mongo.db.news.delete_many({'date': {'$lt': one_day_ago}})
-
-            
