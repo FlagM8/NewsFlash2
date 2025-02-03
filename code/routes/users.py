@@ -40,6 +40,7 @@ def signup():
     # generate password hash from user password
     hashed_password = generate_password_hash(password)
     # generate user object
+    topics = [topic.upper() for topic in topics]
     user_object = User(username=username, password_hash=hashed_password, email=email, topics=topics)
     user_object.quicksave_to_db()
 
@@ -102,7 +103,10 @@ def get_news():
         if not news:
             return jsonify({"success": False, "message": "No news articles found matching user preferences."}), 404 
         redis_client.set(news_key, json_util.dumps(news), ex=10800)
-    return jsonify({"success": True, "news": news})
+    return app.response_class(
+        response=json_util.dumps({"success": True, "news": news}), 
+        mimetype="application/json"
+    )
 
 # load user data
 @bp_users.route("/user/<user>", methods=["GET"])

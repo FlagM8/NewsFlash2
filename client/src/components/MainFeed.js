@@ -16,24 +16,24 @@ function MainFeed({ user }) {
 
     useEffect(() => {
         const fetchArticles = async () => {
-            try {
-                setLoading(true);
-                const response = await axiosInstance.get('/getnews', {
-                    headers: {
-                      Authorization: `Bearer ${localStorage.getItem('token')}`,
-                    },
-                  });
-                const data = await response.json();
-                setArticles(data.articles);
-            } catch (error) {
-                console.error('Error fetching articles:', error);
-            } finally {
-                setLoading(false);
-            }
+          try {
+            setLoading(true);
+            const response = await axiosInstance.get('/getnews', {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+              },
+            });
+            const data = response.data;
+            setArticles(data.news); // Access the 'news' property instead of 'articles'
+          } catch (error) {
+            console.error('Error fetching articles:', error);
+          } finally {
+            setLoading(false);
+          }
         };
-
+      
         fetchArticles();
-    }, [token]);
+      }, [token]);
 
     return (
         <div className="main-feed">
@@ -63,16 +63,16 @@ function MainFeed({ user }) {
                     <div className="articles-list">
                         {articles.map((article, index) => (
                             <div key={index} className="article-card">
-                                {article.urlToImage && (
+                                {article.image && (
                                     <img
-                                        src={article.urlToImage}
+                                        src={article.image}
                                         alt={article.title}
                                         className="article-image"
                                     />
                                 )}
                                 <div className="article-details">
                                     <h2 className="article-title">{article.title}</h2>
-                                    <p className="article-description">{article.description}</p>
+                                    <p className="article-description">{article.summary}</p>
                                     <a
                                         href={article.url}
                                         target="_blank"

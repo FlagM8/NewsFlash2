@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_pymongo import PyMongo
 from flask_jwt_extended import JWTManager
@@ -116,8 +116,8 @@ with open("news_data.json", "r", encoding="utf-8") as f:
 db_news.insert_many(news_list)
 @app.route("/check", methods=["GET"])
 def check_db():
-    test = db_news.find()
+    test = db_news.find_one({"category":"BUSINESS"})
     if test:
-        return test
+        return jsonify({"success": True, "news": test})
     else:
         return "No news found"
