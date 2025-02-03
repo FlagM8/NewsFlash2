@@ -2,8 +2,18 @@ import React, { useState } from 'react';
 import '../styles/Modal.css';
 import {axiosInstance,setToken} from '../axiosInstance';
 
+const topicsList = [
+    "world",
+    "nation",
+    "business",
+    "technology",
+    "entertainment",
+    "science",
+    "sports",
+    "health",
+  ];
 function SignupModal({ onClose, onAuthChange }) {
-    const [credentials, setCredentials] = useState({ username: '', password: '', confirmPassword: '', email: ''});
+    const [credentials, setCredentials] = useState({ username: '', password: '', confirmPassword: '', email: '', topics: []});
     const [error, setError] = useState(null);
     const [token, setToken] = useState(null);
 
@@ -12,9 +22,18 @@ function SignupModal({ onClose, onAuthChange }) {
         setCredentials({ ...credentials, [name]: value });
     };
 
+    const handleTopicClick = (topic) => {
+        setCredentials((prev) => {
+          const newTopics = prev.topics.includes(topic)
+            ? prev.topics.filter((t) => t !== topic) // Remove if already selected
+            : [...prev.topics, topic]; // Add if not selected
+          return { ...prev, topics: newTopics };
+        });
+      };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const { username, password, confirmPassword, email } = credentials;
+        const { username, password, confirmPassword, email, topics } = credentials;
         if (!username || !password || !confirmPassword) {
             alert('Please fill in all fields');
         } else if (password !== confirmPassword) {
@@ -25,7 +44,8 @@ function SignupModal({ onClose, onAuthChange }) {
                 const response = await axiosInstance.post('/signup', {
                     username,
                     password,
-                    email
+                    email,
+                    topics
                 });
 
                 // Handle successful signup
@@ -33,7 +53,7 @@ function SignupModal({ onClose, onAuthChange }) {
                     const token = response.data.access_token;
                     const userData = response.data.user_data; //tady jsou user_data - kdyztak koukni do user.py(class User) v modelech, tam uvidis vsechny parametry ktere to ma, pripadne to jde vypsat v konzoli. Musis ulozit data lokalne, at jsou k dispozici
                     alert('Signup successful');
-                    setToken(token);
+                    localStorage.setItem('token', token);
                     onAuthChange(); // Notify parent component of successful signup
                     onClose(); // Close the modal
                 }
@@ -85,6 +105,25 @@ function SignupModal({ onClose, onAuthChange }) {
                         onChange={handleChange}
                         required
                     />
+                              {/* Topics Selection */}
+                    <input
+                        type="text"
+                        placeholder="Select topics..."
+                        value={credentials.topics.join(", ")}
+                        readOnly
+                    />
+                    <div className="topics-container">
+                        {topicsList.map((topic) => (
+                        <button
+                            type="button"
+                            key={topic}
+                            className={`topic-button ${credentials.topics.includes(topic) ? "selected" : ""}`}
+                            onClick={() => handleTopicClick(topic)}
+                        >
+                            {topic}
+                        </button>
+                        ))}
+                    </div>
                     <button type="submit">Sign Up</button>
                 </form>
                 <button className="close-button" onClick={onClose}>

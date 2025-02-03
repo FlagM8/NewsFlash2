@@ -4,6 +4,8 @@ from flask_pymongo import PyMongo
 from flask_jwt_extended import JWTManager
 from flask_redis import FlaskRedis
 from dotenv import load_dotenv
+from celery import Celery
+#from tasks import celery_tasks
 import os
 
 load_dotenv()
@@ -17,12 +19,27 @@ REDIS_URI = os.environ.get('REDIS_URL')
 # instantiate the app
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY')
+app.config["JWT_SECRET_KEY"] = os.environ.get('SECRET_KEY')
 
+app.config["REDIS_URL"] = REDIS_URI
 redis_client = FlaskRedis(app)
-app.config["REDIS_URL"] = "redis://redis:6379"
 
-# enable CORS
-CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
+
+def make_celery(app):
+    celery = Celery(
+        app.import_name,
+        backend=app.config["REDIS_URL"],
+        broker=app.config["REDIS_URL"]
+    )
+    celery.conf.update(app.config)
+    return celery
+
+celery = make_celery(app)
+
+CORS(app, resources={r"/*": {"origins": "http://localhost:3000",
+                             "allow_headers": ["Content-Type", "Authorization"],
+                             "supports_credentials": True}})
+
 
 # instiantiate JSON Web Token authentication
 jwt = JWTManager(app)
@@ -43,7 +60,8 @@ app.register_blueprint(bp_users)
 def after_request(response):
     response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS, PUT, DELETE'
-    response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+    response.headers.add("Access-Control-Allow-Headers", "Content-Type, Authorization")
+    response.headers.add("Access-Control-Allow-Credentials", "true")
     return response
 
 @app.before_request
@@ -52,5 +70,34 @@ def before_request():
         response = app.make_default_options_response()
         response.headers['Access-Control-Allow-Origin'] = '*'
         response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS, PUT, DELETE'
-        response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+        response.headers.add("Access-Control-Allow-Headers", "Content-Type, Authorization")
+        response.headers.add("Access-Control-Allow-Credentials", "true")
         return response
+    
+from celery.schedules import crontab
+from getNews import fetch_news, get_top_news, remove_news
+
+celery.conf.beat_schedule = {
+    "fetch_news_every_hour": {
+        "task": "getNews.fetch_news",
+        "schedule": crontab(minute=0, hour="*"),  # Every hour
+    },
+    "fetch_top_news_every_6_hours": {
+        "task": "getNews.get_top_news",
+        "schedule": crontab(minute=0, hour="*/6"),  # Every 6 hours
+    },
+    "remove_old_news_daily": {
+        "task": "getNews.remove_news",
+        "schedule": crontab(minute=0, hour=0),  # Daily at midnight
+    },
+}
+
+# Register periodic tasks
+@celery.on_after_finalize.connect
+def setup_periodic_tasks(sender, **kwargs):
+    sender.add_periodic_task(0, fetch_news.s(), name="fetch_news_now")
+    sender.add_periodic_task(crontab(minute=0, hour="*"), fetch_news.s(), name="fetch_news_every_hour")
+    sender.add_periodic_task(crontab(minute=0, hour="*/6"), get_top_news.s(), name="fetch_top_news_every_6_hours")
+    sender.add_periodic_task(crontab(minute=0, hour=0), remove_news.s(), name="remove_old_news_daily")
+    
+fetch_news()

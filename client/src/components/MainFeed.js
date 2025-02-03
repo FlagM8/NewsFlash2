@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/MainFeed.css';
+import {axiosInstance} from '../axiosInstance';
 
 function MainFeed({ user }) {
     const [articles, setArticles] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
+    const token = localStorage.getItem('token');
+    console.log(token);
 
     // const goToUserProfile = () => {
     //     navigate('/profile'); // Redirect to the profile page
@@ -15,7 +18,11 @@ function MainFeed({ user }) {
         const fetchArticles = async () => {
             try {
                 setLoading(true);
-                const response = await fetch('https://api.example.com/news'); // Replace with your API endpoint
+                const response = await axiosInstance.get('/getnews', {
+                    headers: {
+                      Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    },
+                  });
                 const data = await response.json();
                 setArticles(data.articles);
             } catch (error) {
@@ -26,7 +33,7 @@ function MainFeed({ user }) {
         };
 
         fetchArticles();
-    }, []);
+    }, [token]);
 
     return (
         <div className="main-feed">

@@ -2,7 +2,7 @@ from flask import jsonify, request
 from bson import json_util
 from flask import Blueprint, jsonify
 from flask_cors import cross_origin
-from main import db_users, app
+from main import db_users, db_news, app, redis_client
 from models.user import User
 from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -20,6 +20,7 @@ def signup():
     username = credentials.get("username")
     password = credentials.get('password')
     email = credentials.get("email")
+    topics = credentials.get("topics")
     
     # check if username and email exist already
     username_query = {"username": username}
@@ -39,7 +40,7 @@ def signup():
     # generate password hash from user password
     hashed_password = generate_password_hash(password)
     # generate user object
-    user_object = User(username=username, password_hash=hashed_password, email=email)
+    user_object = User(username=username, password_hash=hashed_password, email=email, topics=topics)
     user_object.quicksave_to_db()
 
     username_query = {"username": username}
@@ -80,6 +81,28 @@ def login():
     return json_util.dumps({"token": access_token,
                             "user_data": retrieved_user_data,
                             "status": "Success"}), 200
+
+#test
+@bp_users.route('/getnews', methods=['GET'])
+@jwt_required()
+def get_news():
+    username = get_jwt_identity()
+    news_key = f"news:{username}"
+    news = redis_client.get(news_key)
+    if news:
+        news = json_util.loads(news)
+    else:
+        user_preferences = db_users.find_one({"username": username}).get("topics", [])
+        if not user_preferences:
+            return jsonify({"success": False, "message": "No preferences found for the user."}), 404
+        news = list(db_news.aggregate([
+            {"$match": {"category": {"$in": user_preferences}}},
+            {"$sample": {"size": 15}}
+        ]))
+        if not news:
+            return jsonify({"success": False, "message": "No news articles found matching user preferences."}), 404 
+        redis_client.set(news_key, json_util.dumps(news), ex=10800)
+    return jsonify({"success": True, "news": news})
 
 # load user data
 @bp_users.route("/user/<user>", methods=["GET"])
@@ -150,4 +173,16 @@ def update_user_settings():
     return json_util.dumps({
         "status": "Success",
         "updated_user_data": fetched_user_data
-    })
+    })    
+
+
+@bp_users.route('/check-token', methods=['POST'])
+@jwt_required
+def check_token():
+    try:
+        token = request.json.get('token')
+        username = get_jwt_identity()
+        user_data = db_users.find_one({"username": username})
+        return jsonify({'expired': False, 'userData': user_data})
+    except:
+        return jsonify({'expired': True})
