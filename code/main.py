@@ -29,9 +29,11 @@ def make_celery(app):
     celery = Celery(
         app.import_name,
         backend=app.config["REDIS_URL"],
-        broker=app.config["REDIS_URL"]
+        broker=app.config["REDIS_URL"],
+        worker_concurrency=1
     )
     celery.conf.update(app.config)
+
     return celery
 
 celery = make_celery(app)
@@ -74,7 +76,7 @@ def before_request():
         response.headers.add("Access-Control-Allow-Credentials", "true")
         return response
     
-from celery.schedules import crontab
+"""from celery.schedules import crontab
 from getNews import fetch_news, get_top_news, remove_news
 
 celery.conf.beat_schedule = {
@@ -91,13 +93,26 @@ celery.conf.beat_schedule = {
         "schedule": crontab(minute=0, hour=0),  # Daily at midnight
     },
 }
+"""
 
 # Register periodic tasks
-@celery.on_after_finalize.connect
-def setup_periodic_tasks(sender, **kwargs):
-    sender.add_periodic_task(0, fetch_news.s(), name="fetch_news_now")
-    sender.add_periodic_task(crontab(minute=0, hour="*"), fetch_news.s(), name="fetch_news_every_hour")
-    sender.add_periodic_task(crontab(minute=0, hour="*/6"), get_top_news.s(), name="fetch_top_news_every_6_hours")
-    sender.add_periodic_task(crontab(minute=0, hour=0), remove_news.s(), name="remove_old_news_daily")
+#@celery.on_after_finalize.connect
+#def setup_periodic_tasks(sender, **kwargs):
+#    sender.add_periodic_task(0, fetch_news.s(), name="fetch_news_now")
+#    sender.add_periodic_task(crontab(minute=0, hour="*"), fetch_news.s(), name="fetch_news_every_hour")
+#    sender.add_periodic_task(crontab(minute=0, hour="*/6"), get_top_news.s(), name="fetch_top_news_every_6_hours")
+#    sender.add_periodic_task(crontab(minute=0, hour=0), remove_news.s(), name="remove_old_news_daily")
     
-fetch_news()
+
+
+#with app.app_context():
+#    fetch_news.apply_async()
+
+#fetch_news()
+@app.route("/check", methods=["GET"])
+def check_db():
+    test = db_news.find()
+    if test:
+        return test
+    else:
+        return "No news found"

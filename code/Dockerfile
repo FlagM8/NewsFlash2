@@ -2,7 +2,7 @@
 
 FROM python:3
 
-WORKDIR /code
+WORKDIR /app
 
 # Install dependencies
 COPY requirements.txt ./

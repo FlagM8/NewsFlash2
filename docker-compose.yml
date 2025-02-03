@@ -1,73 +1,72 @@
-services:
-  code:
-    build:
-      context: ./code
-      dockerfile: Dockerfile
-    ports:
-      - "5001:5001"
-    volumes:
-      - ./code:/usr/src/app
-      - ./code:/app
-    environment:
-      - FLASK_ENV=development
-      - FLASK_APP=code/app.py
-      - MONGO_URI=mongodb://root:example@mongodb:27017/admin
-      - REDIS_URL=redis://redis:6379
-      - SECRET_KEY=secret
-    networks:
-      - app-network
-    depends_on:
-      - mongodb
-      - redis
+  services:
+    code:
+      build:
+        context: ./code
+        dockerfile: Dockerfile
+      ports:
+        - "5001:5001"
+      volumes:
+        - ./code:/usr/src/app
+        - ./code:/app
+      environment:
+        - FLASK_ENV=development
+        - FLASK_APP=code/app.py
+        - MONGO_URI=mongodb://root:example@mongodb:27017/admin
+        - REDIS_URL=redis://redis:6379
+        - SECRET_KEY=secret
+      networks:
+        - app-network
+      depends_on:
+        - mongodb
+        - redis
 
-  frontend:
-    build:
-      context: ./client
-      dockerfile: Dockerfile
-    volumes:
-      #- "./client/src:/app"
-      - "./client:/app"    
-      - "/app/node_modules"
-    ports:
-    #  - "8080:80"
-    - "3000:3000"   
-    environment:
-      - CHOKIDAR_USEPOLLING=true #
-      - NODE_ENV=development
-      - BACKEND_SERVICE_URL=http://localhost:5001
-      - REACT_GATEWAY_URL=http://localhost:5001
-    networks:
-      - app-network
-    dns:
-      - 8.8.8.8
-      - 8.8.4.4
+    frontend:
+      build:
+        context: ./client
+        dockerfile: Dockerfile
+      volumes:
+        #- "./client/src:/app"
+        - "./client:/app"    
+        - "/app/node_modules"
+      ports:
+      #  - "8080:80"
+      - "3000:3000"   
+      environment:
+        - CHOKIDAR_USEPOLLING=true #
+        - NODE_ENV=development
+        - BACKEND_SERVICE_URL=http://localhost:5001
+        - REACT_GATEWAY_URL=http://localhost:5001
+      networks:
+        - app-network
+      dns:
+        - 8.8.8.8
+        - 8.8.4.4
+
+    mongodb:
+      image: mongo:latest
+      container_name: mongodb
+      ports:
+        - "27017:27017"
+      volumes:
+        - mongodb_data:/data/db
+      environment:
+        MONGO_INITDB_ROOT_USERNAME: root
+        MONGO_INITDB_ROOT_PASSWORD: example
+      networks:
+        -  app-network
 
 
-  mongodb:
-    image: mongo:7.0
-    container_name: mongodb
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongodb_data:/data/db
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
-    networks:
-      - app-network
+    redis:
+      image: redis:alpine
+      ports:
+        - "6379:6379"
+      networks:
+        - app-network
 
-  redis:
-    image: redis:alpine
-    ports:
-      - "6379:6379"
-    networks:
-      - app-network
+  networks:
+    app-network:
+      driver: bridge
 
-        
-
-networks:
-  app-network:
-    driver: bridge
-
-volumes:
-  mongodb_data:
+  volumes:
+    mongodb_data:
+    chrome_profiles:
