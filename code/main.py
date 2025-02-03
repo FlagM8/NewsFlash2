@@ -5,6 +5,7 @@ from flask_jwt_extended import JWTManager
 from flask_redis import FlaskRedis
 from dotenv import load_dotenv
 from celery import Celery
+import json
 #from tasks import celery_tasks
 import os
 
@@ -109,6 +110,10 @@ celery.conf.beat_schedule = {
 #    fetch_news.apply_async()
 
 #fetch_news()
+with open("news_data.json", "r", encoding="utf-8") as f:
+    news_list = json.load(f)
+
+db_news.insert_many(news_list)
 @app.route("/check", methods=["GET"])
 def check_db():
     test = db_news.find()
