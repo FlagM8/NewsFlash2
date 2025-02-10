@@ -3,7 +3,7 @@ import LoginModal from './LoginModal';
 import SignupModal from './SignupModal';
 import '../styles/WelcomePage.css';
 
-function WelcomePage({ onAuthChange }) {
+/* function WelcomePage({ onAuthChange }) {
     const [showLogin, setShowLogin] = useState(false);
     const [showSignup, setShowSignup] = useState(false);
 
@@ -22,6 +22,14 @@ function WelcomePage({ onAuthChange }) {
             {showSignup && <SignupModal onClose={() => setShowSignup(false)} onAuthChange={onAuthChange} />}
         </div>
     );
-}
-
+} */
+    const WelcomePage = () => {
+        return (
+          <div className="welcome-page">
+            <h1>Welcome to NewsFlash!</h1>
+                <p>Your source for the latest news</p>
+                <p>Sign up or log in to get started</p>
+          </div>
+        );
+      };
 export default WelcomePage;

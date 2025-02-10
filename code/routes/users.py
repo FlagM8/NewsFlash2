@@ -1,5 +1,5 @@
 from flask import jsonify, request
-from bson import json_util
+from bson import json_util, ObjectId
 from flask import Blueprint, jsonify
 from flask_cors import cross_origin
 from main import db_users, db_news, app, redis_client
@@ -12,7 +12,6 @@ from datetime import timedelta
 bp_users = Blueprint('users', __name__)
 
 #app.register_blueprint(bp_users)
-# sign up sequence
 @bp_users.route("/signup", methods=["POST"])
 @cross_origin(origins='*')
 def signup():
@@ -22,13 +21,11 @@ def signup():
     email = credentials.get("email")
     topics = credentials.get("topics")
     
-    # check if username and email exist already
     username_query = {"username": username}
     username_result = db_users.find_one(username_query)
     email_query = {"email": email}
     email_result = db_users.find_one(email_query)
 
-    # return error request if user exists
     data_packet = {}
     if username_result:
         data_packet["status"] = "Username already exists"
@@ -44,12 +41,13 @@ def signup():
     user_object = User(username=username, password_hash=hashed_password, email=email, topics=topics)
     user_object.quicksave_to_db()
 
-    username_query = {"username": username}
-    user_data = db_users.find_one(username_query)
-    if user_data:
+    retrieved_user_data = db_users.find_one({"username": username})
+    if retrieved_user_data:
+        retrieved_user_data["_id"] = str(retrieved_user_data["_id"])  # Convert ObjectId to string
+    if retrieved_user_data:
         access_token = create_access_token(identity=username, expires_delta=timedelta(hours=1))
         return json_util.dumps({"access_token": access_token,
-                            "user_data": user_data,
+                            "user_data": retrieved_user_data,
                             "status": "Success"}), 201
     else:
         data_packet["status"] = "Error"
@@ -62,28 +60,20 @@ def login():
     credentials = request.json
     username = credentials.get('username')
     password = credentials.get('password')
-
-    # retrieve user data from db
     username_query = {"username": username}
     user_data = db_users.find_one(username_query)
-    # return error if non-existent
     if not user_data:
-        return jsonify({'status': 'Invalid username'}), 401
-    # check password
+        return json_util.dumps({'status': 'Invalid username'}), 401
     hashed_password = user_data.get("password_hash")
     if not check_password_hash(hashed_password, password):
-        return jsonify({'status': 'Incorrect password'}), 401
-    
-    # User authenticated
-    access_token = create_access_token(identity=username, expires_delta=timedelta(hours=1))  # Generate JWT token
-    # get user data
+        return json_util.dumps({'status': 'Incorrect password'}), 401
+    access_token = create_access_token(identity=username, expires_delta=timedelta(hours=1)) 
     retrieved_user_data = db_users.find_one({"username": username})
-    # return data packet
+    if retrieved_user_data:
+        retrieved_user_data["_id"] = str(retrieved_user_data["_id"])  # Convert ObjectId to string
     return json_util.dumps({"token": access_token,
                             "user_data": retrieved_user_data,
                             "status": "Success"}), 200
-
-#test
 @bp_users.route('/getnews', methods=['GET'])
 @jwt_required()
 def get_news():
@@ -95,13 +85,13 @@ def get_news():
     else:
         user_preferences = db_users.find_one({"username": username}).get("topics", [])
         if not user_preferences:
-            return jsonify({"success": False, "message": "No preferences found for the user."}), 404
+            return json_util.dumps({"success": False, "message": "No preferences found for the user."}), 404
         news = list(db_news.aggregate([
             {"$match": {"category": {"$in": user_preferences}}},
             {"$sample": {"size": 15}}
         ]))
         if not news:
-            return jsonify({"success": False, "message": "No news articles found matching user preferences."}), 404 
+            return json_util.dumps({"success": False, "message": "No news articles found matching user preferences."}), 404 
         redis_client.set(news_key, json_util.dumps(news), ex=10800)
     return app.response_class(
         response=json_util.dumps({"success": True, "news": news}), 
@@ -180,13 +170,35 @@ def update_user_settings():
     })    
 
 
-@bp_users.route('/check-token', methods=['POST'])
-@jwt_required
+@bp_users.route('/check-token', methods=['GET'])
+@jwt_required()
 def check_token():
     try:
-        token = request.json.get('token')
         username = get_jwt_identity()
         user_data = db_users.find_one({"username": username})
-        return jsonify({'expired': False, 'userData': user_data})
-    except:
-        return jsonify({'expired': True})
+        if user_data:
+            return json_util.dumps({'expired': False, 'userData': user_data}), 200
+        else:
+            return json_util.dumps({'expired': True}), 404
+    except Exception as e:
+        return json_util.dumps({'expired': True, 'error': str(e)}), 401
+    
+@bp_users.route("/update-profile", methods=["POST"])
+@jwt_required()
+def update_profile():
+    username = get_jwt_identity()
+    data = request.json
+    topics = data.get("topics", [])
+
+    if not topics or not isinstance(topics, list):
+        return jsonify({"status": "Invalid topics"}), 400
+
+    topics = [topic.upper() for topic in topics]
+
+    db_users.update_one({"username": username}, {"$set": {"topics": topics}})
+
+    # Clear Redis cache for the user's news
+    redis_key = f"news:{username}"
+    redis_client.delete(redis_key)
+
+    return jsonify({"status": "Profile updated successfully"}), 200

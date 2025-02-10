@@ -18,6 +18,16 @@ const axiosInstance = axios.create({
 
 const setToken = (token) => {
   localStorage.setItem('token', token);
+  console.log("TOKEN: ",localStorage.getItem('token'));
+};
+const setData = (userdata) => {
+  localStorage.setItem('userdata', userdata);
+  console.log("UDATA: ",localStorage.getItem('userdata'));
 };
 
-export { axiosInstance, setToken };
+const getData = () => {
+  var data = localStorage.getItem('userdata');
+  console.log(data);
+  return data;
+};
+export { axiosInstance, setToken, setData, getData };

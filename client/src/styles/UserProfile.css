@@ -1,6 +1,133 @@
 .user-profile {
     font-family: "Courier New", "Lucida Console", monospace;
     padding: 20px;
+    background-color: #394867;
+    color: #F1F6F9;
+    max-width: 600px;
+    margin: 50px auto;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.profile-pic {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #333;
+}
+
+.user-profile h1 {
+    text-align: center;
+    font-size: 2rem;
+    color: #9BA4B5;
+    margin-bottom: 10px;
+}
+
+.user-profile p {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #9BA4B5;
+}
+
+.topics-section {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.topics-section h3 {
+    font-size: 1.5rem;
+    color: #F1F6F9;
+    margin-bottom: 10px;
+}
+
+.topics-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.topic-button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    background-color: #9BA4B5;
+    color: #F1F6F9;
+    transition: background-color 0.3s ease;
+}
+
+.topic-button:hover {
+    background-color: #212A3E;
+}
+
+.topic-button.selected {
+    background-color: #F1F6F9;
+    color: #394867;
+}
+
+.topic-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.profile-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.edit-button,
+.send-button,
+.quit-button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.edit-button {
+    background-color: #9BA4B5;
+    color: #F1F6F9;
+}
+
+.edit-button:hover {
+    background-color: #212A3E;
+}
+
+.send-button {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.send-button:hover {
+    background-color: #388E3C;
+}
+
+.quit-button {
+    background-color: #D32F2F;
+    color: white;
+}
+
+.quit-button:hover {
+    background-color: #B71C1C;
+}
+
+
+.user-profile {
+    font-family: "Courier New", "Lucida Console", monospace;
+    padding: 20px;
     max-width: 600px;
     margin: 0 auto;
     background: #fff;

@@ -3,6 +3,8 @@ import axiosInstance from './axiosInstance';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import WelcomePage from './components/WelcomePage';
 import MainFeed from './components/MainFeed';
+import TopBar from './components/TopBar';
+import UserProfile from './components/UserProfile';
 
 function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -13,6 +15,7 @@ function App() {
 
     return (
         <Router>
+          <TopBar />
             <Routes>
                 <Route
                     path="/"
@@ -25,6 +28,7 @@ function App() {
                     }
                 />
                 <Route path="/main" element={<MainFeed />} />
+                <Route path="/profile" element={<UserProfile />} />
             </Routes>
         </Router>
     );
