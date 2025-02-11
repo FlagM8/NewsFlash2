@@ -34,17 +34,14 @@ def signup():
         data_packet["status"] = "Email already exists"
         return json_util.dumps(data_packet), 401
     
-    # generate password hash from user password
     hashed_password = generate_password_hash(password)
-    # generate user object
     topics = [topic.upper() for topic in topics]
     user_object = User(username=username, password_hash=hashed_password, email=email, topics=topics)
     user_object.quicksave_to_db()
 
     retrieved_user_data = db_users.find_one({"username": username})
     if retrieved_user_data:
-        retrieved_user_data["_id"] = str(retrieved_user_data["_id"])  # Convert ObjectId to string
-    if retrieved_user_data:
+        retrieved_user_data["_id"] = str(retrieved_user_data["_id"])
         access_token = create_access_token(identity=username, expires_delta=timedelta(hours=1))
         return json_util.dumps({"access_token": access_token,
                             "user_data": retrieved_user_data,
@@ -54,7 +51,6 @@ def signup():
         return json_util.dumps(data_packet), 500
 
 
-# log in sequence
 @bp_users.route('/login', methods=['POST'])
 def login():
     credentials = request.json
@@ -70,7 +66,7 @@ def login():
     access_token = create_access_token(identity=username, expires_delta=timedelta(hours=1)) 
     retrieved_user_data = db_users.find_one({"username": username})
     if retrieved_user_data:
-        retrieved_user_data["_id"] = str(retrieved_user_data["_id"])  # Convert ObjectId to string
+        retrieved_user_data["_id"] = str(retrieved_user_data["_id"]) 
     return json_util.dumps({"token": access_token,
                             "user_data": retrieved_user_data,
                             "status": "Success"}), 200
@@ -98,7 +94,6 @@ def get_news():
         mimetype="application/json"
     )
 
-# load user data
 @bp_users.route("/user/<user>", methods=["GET"])
 def user(user):
     news_list = list(db_chapters.find({"username": user}))
@@ -122,7 +117,6 @@ def user(user):
     return json_util.dumps(data_packet)
 
 
-# load user data
 @bp_users.route("/settings/<user>", methods=["GET"])
 def get_settings(user):
     user_data = db_users.find_one({"username": user})
@@ -134,7 +128,6 @@ def get_settings(user):
 
     return json_util.dumps(settings_data)
 
-# follow updates
 @bp_users.route('/follow', methods=['POST'])
 @jwt_required()
 def follow():
@@ -147,7 +140,6 @@ def follow():
         User.remove_follower(data.get("user_being_followed"), data.get("user_follows"))
         return json_util.dumps("Success")
     
-# update user settings
 @bp_users.route("/update_settings", methods=["POST"])
 @jwt_required()
 def update_user_settings():
@@ -197,7 +189,6 @@ def update_profile():
 
     db_users.update_one({"username": username}, {"$set": {"topics": topics}})
 
-    # Clear Redis cache for the user's news
     redis_key = f"news:{username}"
     redis_client.delete(redis_key)
 
